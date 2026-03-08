@@ -3,6 +3,9 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django import forms
+from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.core.exceptions import ValidationError
 
 from .models import Driver, Car, Manufacturer
 
@@ -78,6 +81,7 @@ class CarDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Car
     success_url = reverse_lazy("taxi:car-list")
 
+# !!! driver
 
 class DriverListView(LoginRequiredMixin, generic.ListView):
     model = Driver
@@ -87,3 +91,58 @@ class DriverListView(LoginRequiredMixin, generic.ListView):
 class DriverDetailView(LoginRequiredMixin, generic.DetailView):
     model = Driver
     queryset = Driver.objects.all().prefetch_related("cars__manufacturer")
+
+
+class DriverCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Driver
+    fields = "__all__"
+    success_url = reverse_lazy("taxi:driver-list")
+
+class DriverUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Driver
+    fields = "__all__"
+    success_url = reverse_lazy("taxi:driver-list")
+
+
+class DriverDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Driver
+    success_url = reverse_lazy("taxi:driver-list")
+
+
+
+class DriverLicenseNumberUpdateForm(forms.ModelForm):
+    LENGTH = 8
+
+    license_number = forms.CharField(
+        required=True,
+        validators=[
+            MinLengthValidator(LENGTH),
+            MaxLengthValidator(LENGTH),
+        ]
+    )
+
+    class Meta:
+        model = Driver
+        fields = ("license_number",)
+
+    def clean_license_number(self):
+        license_number = self.cleaned_data["license_number"]
+
+        letters = license_number[:3]
+        numbers = license_number[3:]
+
+        if not letters.isalpha():
+            raise ValidationError("First three symbols must be letters.")
+
+        if not letters.isupper():
+            raise ValidationError("Letters must be uppercase.")
+
+        if not numbers.isdigit():
+            raise ValidationError("Last five symbols must be numbers.")
+
+        return license_number
+
+class DriverLicenseUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Driver
+    form_class = DriverLicenseNumberUpdateForm
+    success_url = reverse_lazy("taxi:driver-list")

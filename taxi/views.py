@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+
 
 from .models import Driver, Car, Manufacturer
 
@@ -93,7 +95,7 @@ class DriverDetailView(LoginRequiredMixin, generic.DetailView):
 
 
 class DriverCreateView(LoginRequiredMixin, generic.CreateView):
-    model = Driver
+    model = get_user_model()
     fields = "__all__"
     success_url = reverse_lazy("taxi:driver-list")
 
@@ -109,9 +111,10 @@ class DriverDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("taxi:driver-list")
 
 
-class DriverLicenseNumberUpdateForm(forms.ModelForm):
+class DriverLicenseUpdateForm(forms.ModelForm):
     LENGTH = 8
 
+    model = get_user_model()
     license_number = forms.CharField(
         required=True,
         validators=[
@@ -141,11 +144,6 @@ class DriverLicenseNumberUpdateForm(forms.ModelForm):
 
         return license_number
 
-class DriverLicenseUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = Driver
-    form_class = DriverLicenseNumberUpdateForm
-    success_url = reverse_lazy("taxi:driver-list")
-
 
 class ToggleAssignView(LoginRequiredMixin, generic.View):
     def post(self, request, pk):
@@ -156,3 +154,9 @@ class ToggleAssignView(LoginRequiredMixin, generic.View):
         else:
             car.drivers.add(user)
         return redirect("taxi:car-detail", pk=pk)
+
+
+class DriverLicenseUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = get_user_model()
+    form_class = DriverLicenseUpdateForm
+    success_url = reverse_lazy("taxi:driver-list")

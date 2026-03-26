@@ -18,6 +18,7 @@ from .views import (
     DriverUpdateView,
     DriverDeleteView,
     DriverLicenseUpdateView,
+    DriverLicenseUpdateForm,
 )
 
 urlpatterns = [

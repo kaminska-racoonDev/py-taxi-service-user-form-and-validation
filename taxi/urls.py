@@ -18,8 +18,9 @@ from .views import (
     DriverUpdateView,
     DriverDeleteView,
     DriverLicenseUpdateView,
-    DriverLicenseUpdateForm,
 )
+
+from taxi.forms import DriverLicenseUpdateForm
 
 urlpatterns = [
     path("", index, name="index"),

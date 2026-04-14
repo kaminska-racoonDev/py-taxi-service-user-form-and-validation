@@ -7,8 +7,10 @@ from django.contrib.auth import get_user_model
 from taxi.forms import DriverLicenseUpdateForm
 
 
-from .models import Driver, Car, Manufacturer
+from .models import Car, Manufacturer
+from django.contrib.auth import get_user_model
 
+Driver = get_user_model()
 
 @login_required
 def index(request):
@@ -93,8 +95,7 @@ class DriverDetailView(LoginRequiredMixin, generic.DetailView):
 
 
 class DriverCreateView(LoginRequiredMixin, generic.CreateView):
-    model = get_user_model()
-    fields = "__all__"
+    model = Driver
     success_url = reverse_lazy("taxi:driver-list")
 
 

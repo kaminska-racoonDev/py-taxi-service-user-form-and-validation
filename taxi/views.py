@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import get_user_model
 from taxi.forms import DriverLicenseUpdateForm
 from .models import Car, Manufacturer
 from django.contrib.auth import get_user_model

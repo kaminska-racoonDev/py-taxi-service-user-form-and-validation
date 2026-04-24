@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django import forms
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.core.exceptions import ValidationError
-from .models import Driver
+from taxi.models import Driver
 
 
 class DriverLicenseUpdateForm(forms.ModelForm):
